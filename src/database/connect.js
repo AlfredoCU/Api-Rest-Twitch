@@ -2,7 +2,7 @@ import mongoonse from "mongoose";
 
 try {
   await mongoonse.connect(process.env.URI_MONGO);
-  console.info("Connect DB");
+  console.log("SUCCESS_CONNECT_DB");
 } catch (error) {
-  console.error("ERROR_CONNECT", error);
+  console.log("ERROR_CONNECT_DB", error);
 }
