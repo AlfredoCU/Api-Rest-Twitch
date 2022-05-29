@@ -8,7 +8,7 @@ export const rgxPassword =
 
 export const confirmPassword = (value, { req }) => {
   if (value !== req.body.password) {
-    throw new Error("La contraseña no coincide.");
+    throw new Error("La contraseña no coincide");
   }
 
   return true;
