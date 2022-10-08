@@ -10,15 +10,14 @@ export const login = async (req, res) => {
     const validPassword = !!user ? await user.comparePassword(password) : false;
 
     if (!user || !validPassword) {
-      return res.status(403).json({ message: infoMessages.userNotFound });
+      return res.status(403).json({ error: infoMessages.userNotFound });
     }
 
     const { token, expiresIn } = generateToken(user.id);
     return res.status(200).json({ token, expiresIn });
   } catch (error) {
     console.log("LOGIN_CONTROLLER_ERROR", error);
-
-    return res.status(500).json({ message: infoMessages.serverError });
+    return res.status(500).json({ error: infoMessages.serverError });
   }
 };
 
@@ -29,16 +28,17 @@ export const register = async (req, res) => {
 
     await user.save();
 
-    return res.status(201).json({ success: true });
+    const { token, expiresIn } = generateToken(user.id);
+    return res.status(201).json({ token, expiresIn });
   } catch (error) {
     console.log("REGISTER_CONTROLLER_ERROR", error);
 
     if (error.code in codeErrors) {
       return res
         .status(400)
-        .json({ code: error.code, message: codeErrors[error.code] });
+        .json({ code: error.code, error: codeErrors[error.code] });
     }
 
-    return res.status(500).json({ message: infoMessages.serverError });
+    return res.status(500).json({ error: infoMessages.serverError });
   }
 };
