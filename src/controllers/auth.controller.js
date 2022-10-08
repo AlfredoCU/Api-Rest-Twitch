@@ -1,7 +1,7 @@
 import { User } from "../models/User.js";
 import { codeErrors } from "../constants/codeErrors.js";
 import { infoMessages } from "../constants/infoMessages.js";
-import { generateToken } from "../utils/generateToken.js";
+import { generateRefreshToken, generateToken } from "../utils/tokenManager.js";
 
 export const login = async (req, res) => {
   try {
@@ -14,6 +14,8 @@ export const login = async (req, res) => {
     }
 
     const { token, expiresIn } = generateToken(user.id);
+    generateRefreshToken(user.id, res);
+
     return res.status(200).json({ token, expiresIn });
   } catch (error) {
     console.log("LOGIN_CONTROLLER_ERROR", error);
