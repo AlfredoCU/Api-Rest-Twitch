@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 import { User } from "../models/User.js";
 import { codeErrors } from "../constants/codeErrors.js";
 import { infoMessages } from "../constants/infoMessages.js";
@@ -41,6 +43,32 @@ export const register = async (req, res) => {
         .json({ code: error.code, error: codeErrors[error.code] });
     }
 
+    return res.status(500).json({ error: infoMessages.serverError });
+  }
+};
+
+export const logout = (_, res) => {
+  try {
+    res.clearCookie("refreshToken");
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.log("LOGOUT", error);
+    return res.status(500).json({ error: infoMessages.serverError });
+  }
+};
+
+export const getRefreshToken = (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) throw new Error(codeErrors["not token"]);
+
+    const { uid } = jwt.verify(refreshToken, process.env.JWT_REFRESH);
+    const { token, expiresIn } = generateToken(uid);
+
+    return res.status(200).json({ token, expiresIn });
+  } catch (error) {
+    console.log("GET_REFRESH_TOKEN", error);
     return res.status(500).json({ error: infoMessages.serverError });
   }
 };
