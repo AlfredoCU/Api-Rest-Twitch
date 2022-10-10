@@ -1,5 +1,3 @@
-import jwt from "jsonwebtoken";
-
 import { User } from "../models/User.js";
 import { codeErrors } from "../constants/codeErrors.js";
 import { infoMessages } from "../constants/infoMessages.js";
@@ -59,13 +57,7 @@ export const logout = (_, res) => {
 
 export const getRefreshToken = (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-
-    if (!refreshToken) throw new Error(codeErrors["not token"]);
-
-    const { uid } = jwt.verify(refreshToken, process.env.JWT_REFRESH);
-    const { token, expiresIn } = generateToken(uid);
-
+    const { token, expiresIn } = generateToken(req.uid);
     return res.status(200).json({ token, expiresIn });
   } catch (error) {
     console.log("GET_REFRESH_TOKEN", error);
