@@ -9,15 +9,20 @@ import profileRouter from "./src/routes/profile.route.js";
 import linkRouter from "./src/routes/link.route.js";
 
 const whiteList = [process.env.ORIGIN_1, process.env.ORIGIN_2];
-
 const app = express();
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (whiteList.includes(origin)) {
+      const validMode =
+        process.env.MODO === "developer"
+          ? !origin || whiteList.includes(origin)
+          : whiteList.includes(origin);
+
+      if (validMode) {
         return callback(null, origin);
       }
+
       return callback(`Error de CORS origin: ${origin} no autorizado`);
     },
   })
